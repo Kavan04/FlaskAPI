@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, request
 from flask_sqlalchemy import SQLAlchemy
+import sqlite3
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
@@ -33,7 +34,32 @@ def get_drinks():
        output.append(drink_data)
        return{'drinks': output}
 
+@app.route('/drinks/<id>')
+def get_drink(id):
+   drink = Drink.query.get_or_404(id)
+   return {'name': drink.name, 'description': drink.description}
 
+@app.route('/drinks', methods=['POST'])
+def add_drink():
+    drink = Drink(name = request.json['name'],description = request.json['description'])
+    db.session.add(drink)
+    db.session.commit()
+    return {'id': drink.id}
+
+@app.route('/drink/<id>', methods=['DELETE'])
+def delete_drink(id):
+    
+    if drink is None:
+        return {"error": "not found"}
+    
+    drink = Drink.query.get(id)
+    db.session.delete(drink)
+    db.session.commit()
+    return{"message": "yeet!"}
+
+
+
+    
    
 
 if __name__ == "__main__":
